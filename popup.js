@@ -1,15 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const analyzeBtn = document.getElementById('analyzeBtn');
-  const loadingDiv = document.getElementById('loading');
-  const errorContainer = document.getElementById('errorContainer');
-  const scoreContainer = document.getElementById('scoreContainer');
+  const analyzeBtn      = document.getElementById('analyzeBtn');
+  const loadingDiv      = document.getElementById('loading');
+  const errorContainer  = document.getElementById('errorContainer');
+  const errorText       = document.getElementById('errorText');
+  const scoreContainer  = document.getElementById('scoreContainer');
   const clausesContainer = document.getElementById('clausesContainer');
 
   analyzeBtn.addEventListener('click', async () => {
-    // Önceki sonuç ve hata alanlarını sıfırla
     resetUI();
-
-    // Yükleniyor durumunu aktif et
     setLoadingState(true);
 
     try {
@@ -21,13 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // content.js scriptine mesaj gönder
       chrome.tabs.sendMessage(tab.id, { action: 'analyze_tos' }, (response) => {
         setLoadingState(false);
 
         if (chrome.runtime.lastError) {
           showError(
-            'İçerik scripti ile iletişim kurulamadı. Lütfen sayfayı yenileyip eklentiyi tekrar çalıştırın. (Hata: ' +
+            'İçerik scripti ile iletişim kurulamadı. Sayfayı yenileyip tekrar deneyin. (Hata: ' +
             chrome.runtime.lastError.message + ')'
           );
           return;
@@ -52,56 +49,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ── Yükleniyor durumunu aç/kapa ─────────────────
   function setLoadingState(isLoading) {
     if (isLoading) {
       loadingDiv.style.display = 'block';
       analyzeBtn.disabled = true;
-      analyzeBtn.style.opacity = '0.65';
     } else {
       loadingDiv.style.display = 'none';
       analyzeBtn.disabled = false;
-      analyzeBtn.style.opacity = '1';
     }
   }
 
+  // ── Arayüzü sıfırla ─────────────────────────────
   function resetUI() {
-    errorContainer.style.display = 'none';
-    errorContainer.textContent = '';
-    scoreContainer.style.display = 'none';
-    scoreContainer.innerHTML = '';
-    clausesContainer.style.display = 'none';
-    clausesContainer.innerHTML = '';
+    errorContainer.style.display  = 'none';
+    if (errorText) errorText.textContent = '';
+    scoreContainer.style.display   = 'none';
+    scoreContainer.innerHTML        = '';
+    clausesContainer.style.display  = 'none';
+    clausesContainer.innerHTML      = '';
   }
 
+  // ── Hata göster ─────────────────────────────────
   function showError(message) {
-    errorContainer.textContent = message;
-    errorContainer.style.display = 'block';
+    if (errorText) {
+      errorText.textContent = message;
+    } else {
+      errorContainer.textContent = message;
+    }
+    errorContainer.style.display = 'flex';
   }
 
+  // ── Sonuçları render et ─────────────────────────
   function displayResults(data) {
-    // 1. Risk Puanını Göster ve Renklendir
     renderRiskScore(data.risk_score);
-
-    // 2. Tespit Edilen Maddeleri Listele
     renderClauses(data.clauses);
   }
 
+  // ── Risk skoru kartı ─────────────────────────────
   function renderRiskScore(score) {
     const numericScore = typeof score === 'number' ? score : parseInt(score, 10) || 0;
     scoreContainer.style.display = 'block';
-    scoreContainer.className = ''; // Eski sınıfları temizle
+    scoreContainer.className = '';  // önceki sınıfları temizle
 
-    let statusText = '';
-    let colorClass = '';
+    let statusText, colorClass;
 
     if (numericScore <= 3) {
-      statusText = 'Düşük Risk (Güvenli)';
+      statusText = 'Düşük Risk — Güvenli Görünüyor';
       colorClass = 'score-low';
     } else if (numericScore <= 7) {
-      statusText = 'Orta Risk (Dikkat Edilmeli)';
+      statusText = 'Orta Risk — Dikkat Edilmeli';
       colorClass = 'score-medium';
     } else {
-      statusText = 'Yüksek Risk (Tehlikeli Maddeler)';
+      statusText = 'Yüksek Risk — Tehlikeli Maddeler Var';
       colorClass = 'score-high';
     }
 
@@ -109,14 +109,21 @@ document.addEventListener('DOMContentLoaded', () => {
     scoreContainer.innerHTML = `
       <div class="score-box">
         <div class="score-meta">
-          <span class="score-title">Sözleşme Risk Seviyesi</span>
+          <span class="score-label">Sözleşme Risk Seviyesi</span>
           <span class="score-status">${statusText}</span>
         </div>
-        <div class="score-number">${numericScore} / 10</div>
+        <div class="score-right">
+          <span class="score-number">${numericScore}</span>
+          <span class="score-denom">/ 10</span>
+        </div>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" style="width:${numericScore * 10}%"></div>
       </div>
     `;
   }
 
+  // ── Madde kartları ───────────────────────────────
   function renderClauses(clauses) {
     clausesContainer.innerHTML = '';
 
@@ -124,7 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
       clausesContainer.style.display = 'block';
       clausesContainer.innerHTML = `
         <div class="empty-state">
-          🛡️ Bu sayfada kullanıcı aleyhine belirgin bir riskli madde tespit edilmedi.
+          <div class="empty-state-icon">🛡️</div>
+          Bu sayfada kullanıcı aleyhine belirgin bir riskli madde tespit edilmedi.
         </div>
       `;
       return;
@@ -132,28 +140,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clausesContainer.style.display = 'block';
 
+    // Bölüm başlığı
     const header = document.createElement('div');
-    header.className = 'section-title';
-    header.textContent = `Tespit Edilen Maddeler (${clauses.length})`;
+    header.className = 'section-header';
+    header.innerHTML = `
+      <span class="section-title">Tespit Edilen Maddeler</span>
+      <span class="count-badge">${clauses.length}</span>
+    `;
     clausesContainer.appendChild(header);
 
     clauses.forEach((item, index) => {
       const card = document.createElement('div');
-      card.className = 'clause-card';
+      card.className = 'clause-card animate-in';
 
-      const isPromptInjection = item.explanation && item.explanation.includes('Prompt Injection');
+      // Prompt Injection tespiti
+      const isPromptInjection = item.explanation &&
+        item.explanation.includes('Prompt Injection');
+
       if (isPromptInjection) {
         card.classList.add('injection-alert');
       }
 
-      const originalText = item.original_text ? escapeHtml(item.original_text) : 'Metin alıntılanmadı';
-      const explanationText = item.explanation ? escapeHtml(item.explanation) : 'Açıklama belirtilmedi';
+      const originalText    = item.original_text  ? escapeHtml(item.original_text)  : 'Metin alıntılanmadı';
+      const explanationText = item.explanation     ? escapeHtml(item.explanation)    : 'Açıklama belirtilmedi';
 
       card.innerHTML = `
-        ${isPromptInjection ? '<div class="injection-badge">🚨 GÜVENLİK TEHDİDİ (PROMPT INJECTION)</div>' : ''}
-        <span class="clause-label" style="color: #64748b;">Madde ${index + 1} - Orijinal Metin:</span>
+        ${isPromptInjection
+          ? '<div class="injection-badge">🚨 GÜVENLİK TEHDİDİ — PROMPT INJECTION</div>'
+          : ''}
+        <div class="clause-num">Madde ${index + 1}</div>
         <div class="clause-quote">"${originalText}"</div>
-        <span class="clause-label" style="color: #0f172a;">Açıklama & Risk:</span>
+        <div class="clause-explanation-label">Açıklama &amp; Risk</div>
         <div class="clause-explanation">${explanationText}</div>
       `;
 
@@ -161,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── XSS önleme ──────────────────────────────────
   function escapeHtml(string) {
     if (typeof string !== 'string') return '';
     const div = document.createElement('div');
