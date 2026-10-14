@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "data": {
+    "risk_score": 8,
+    "clauses": [
+      {
+        "original_text": "Kişisel verileriniz, önceden bildirim yapılmaksızın üçüncü taraf iş ortaklarımızla paylaşılabilir.",
+        "explanation": "Kullanıcı verilerinin habersizce üçüncü taraflara satılmasına ya da devredilmesine zemin hazırlar. Yüksek gizlilik riski."
+      },
+      {
+        "original_text": "Şirket, hizmet koşullarını tek taraflı olarak değiştirme hakkını saklı tutar.",
+        "explanation": "Sözleşme koşulları kullanıcıya haber verilmeden her an değiştirilebilir. Kullanıcı, onay vermeksizin yeni koşullara tabi kılınır."
+      },
+      {
+        "original_text": "Hizmetin kullanımından doğan doğrudan veya dolaylı hiçbir zarardan sorumlu tutulamayız.",
+        "explanation": "Şirket, platforma bağlı tüm olası kayıplar için sorumsuzluğunu beyan ediyor. Bu madde kullanıcıyı hukuken korumasız bırakır."
+      }
+    ]
+  }
+}

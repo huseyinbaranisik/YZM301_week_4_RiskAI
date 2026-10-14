@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "data": {
+    "risk_score": 5,
+    "clauses": [
+      {
+        "original_text": "Verileriniz analitik amaçlarla işlenebilir.",
+        "explanation": "Bu ifade muğlak bırakılmış; hangi tür analitik işlem yapıldığı, kiminle paylaşıldığı ya da ne kadar süre saklandığı belirtilmemiş. Belirsizlik nedeniyle risk orta seviyede değerlendirildi."
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Sözleşme Dedektifi",
+  "version": "1.0.0",
+  "description": "Kullanım Koşulları (ToS) metinlerini analiz eden yapay zeka destekli Chrome eklentisi.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Sözleşme Dedektifi"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}
