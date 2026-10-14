@@ -14,16 +14,19 @@
 ### 🎬 DEMO VİDEOSU
 
 <p align="center">
-  <a href="https://github.com/huseyinbaranisik/hafta_4">
-    <img src="https://img.shields.io/badge/▶%20Demo%20Videosu%20(Cypress%20Kaydı)-8B3FFD?style=for-the-badge&logo=github&logoColor=white" />
+  <a href="https://youtu.be/16jVQ8oxXdo" target="_blank">
+    <img src="https://img.youtube.com/vi/16jVQ8oxXdo/maxresdefault.jpg" alt="RiskAI 2.0 Demo Videosu" width="720" style="border-radius:12px;" />
+  </a>
+  <br/><br/>
+  <a href="https://youtu.be/16jVQ8oxXdo">
+    <img src="https://img.shields.io/badge/▶%20YouTube'da%20İzle-FF0000?style=for-the-badge&logo=youtube&logoColor=white" />
   </a>
   &nbsp;
   <a href="https://github.com/huseyinbaranisik/hafta_4/tree/main/cypress/videos">
-    <img src="https://img.shields.io/badge/📁%20cypress%2Fvideos%2F-17202C?style=for-the-badge" />
+    <img src="https://img.shields.io/badge/📁%20Cypress%20Video%20Dosyası-17202C?style=for-the-badge&logo=github&logoColor=white" />
   </a>
 </p>
 
-> Video repo içinde `cypress/videos/demo_video.cy.js.mp4` yolundadır (≤ 90 sn).  
 > **Senaryo 1 — Mutlu Yol:** Yüksek riskli sözleşme başarıyla analiz edilir (8/10, 3 madde).  
 > **Senaryo 2 — Belirsizlik:** Muğlak ifade dürüstçe orta risk (5/10) olarak işaretlenir.
 
